@@ -3,7 +3,7 @@
 Они могут быть как равны между собой (оба минимальны), так и различаться.
 """
 
-from sys import getsizeof
+from sys import (getsizeof, version, platform)
 from inspect import getsource
 from random import randint
 
@@ -38,6 +38,10 @@ class MemoryAnalyzer:
 
 def main():
     test_values = [[randint(-9999, 9999) for _ in range(0, 10 ** (i + 1))] for i in range(0, 4)]
+
+    print('-' * 100)
+    print(f'Python: {version}\nSystem: {platform}')
+    print('-' * 100)
 
     for solution in [solution_a, solution_b, solution_c]:
         memory_analyzer = MemoryAnalyzer(solution)
@@ -134,3 +138,6 @@ def solution_c(items: [int], memory_analyzer: MemoryAnalyzer):
 
 if __name__ == '__main__':
     main()
+
+# Min memory usage could be achieved with solution_a,
+# Max memory usage could be achieved with solution_c

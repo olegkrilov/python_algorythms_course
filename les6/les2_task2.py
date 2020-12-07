@@ -2,7 +2,7 @@
 2. Посчитать четные и нечетные цифры введенного натурального числа.
 Например, если введено число 34564, в нем 3 четные цифры (4, 6 и 0) и 2 нечетные (3 и 5).
 """
-from sys import getsizeof
+from sys import (getsizeof, version, platform)
 from inspect import getsource
 from random import randint
 
@@ -55,6 +55,10 @@ def print_results(data):
 
 def main():
     test_numbers = [randint(1111111111, 99999999999) for _ in range(3)]
+
+    print('-' * 100)
+    print(f'Python: {version}\nSystem: {platform}')
+    print('-' * 100)
 
     for solution in [solution_a, solution_b, solution_c]:
         memory_analyzer = MemoryAnalyzer(solution)
@@ -126,3 +130,6 @@ def solution_c(num: int, memory_analyzer: MemoryAnalyzer):
 
 if __name__ == '__main__':
     main()
+
+# Min memory usage could be achieved with solution_b,
+# Max memory usage could be achieved with solution_c
