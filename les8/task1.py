@@ -42,17 +42,17 @@ class Person:
             _other = Person.__entities[other]
 
         if _other is not None:
-            self.add_relation(_other.uid)
             _other.add_relation(self.uid)
-            return 1
+            return self.add_relation(_other.uid)
         else:
             return 0
 
     def add_relation(self, uid, value=1):
         if uid not in self.__connections:
             self.__connections[uid] = value
-
-        return self
+            return value
+        else:
+            return 0
 
     def get_friends(self):
         uid = self.uid
@@ -68,7 +68,7 @@ class Person:
 
 
 def build_graph(persons: [Person]):
-    total_links = 0
+    unique_links = 0
     rows = [['\u2591' * 10]]
     _len = len(persons)
 
@@ -91,7 +91,7 @@ def build_graph(persons: [Person]):
         new_row[uid + 1] = 0
 
         for friend in person.get_friends():
-            total_links += person.shake_hand(friend)
+            unique_links += person.shake_hand(friend)
             new_row[friend.uid + 1] = 1
 
         rows[0].append(name)
@@ -105,17 +105,19 @@ def build_graph(persons: [Person]):
             _print_line()
 
     _print_line()
-    print(f'Total Links: {total_links}')
+    print(f'Total Links: {unique_links}')
 
-    return total_links
+    return unique_links
 
 
 def main():
     number_of_persons = int(input('How many friends met [3 - 10]? >>> '))
+
+    test_value = ((number_of_persons ** 2) - number_of_persons) / 2
     total_links = build_graph([Person(NAMES[i]) for i in range(number_of_persons)])
 
     # Test result
-    assert total_links == ((number_of_persons ** 2) - number_of_persons), 'Something went wrong'
+    assert total_links == test_value, 'Something went wrong'
 
 
 if __name__ == '__main__':
