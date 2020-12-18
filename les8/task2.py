@@ -224,7 +224,7 @@ def main():
             print_line(graph.size)
             print(f'Best path is: {best_path[0]} with {best_path[1]}pts.\n')
 
-            is_done = input('Repeat [y/n] ? >>> ').lower() != 'y'
+        is_done = input('Repeat [y/n] ? >>> ').lower() != 'y'
 
 
 if __name__ == '__main__':
