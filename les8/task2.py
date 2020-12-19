@@ -7,6 +7,11 @@ from random import (randint, choice)
 from string import ascii_uppercase
 
 
+GRAPH_RANGE = (8, 13)
+WEIGHT_RANGE = (1, 9)
+COL_SIZE = 10
+
+
 class Node:
 
     __index: int = 0
@@ -76,8 +81,9 @@ class Node:
 
 class Graph:
 
-    def __init__(self, number_of_nodes: int = randint(8, 13)):
+    def __init__(self, number_of_nodes: int = randint(*GRAPH_RANGE)):
         self.__nodes = {}
+        self.__best_path = float('inf')
 
         for _ in range(number_of_nodes):
             node = Node(self)
@@ -85,14 +91,14 @@ class Graph:
 
     def __str__(self):
         __str = ''
-        rows = [['\u2591' * 10]]
+        rows = [['\u2591' * COL_SIZE]]
         _len = len(self.nodes)
 
         def _build_row(*args):
             _row = ''
 
             for _str in args:
-                _row += f'{_str:>10}'
+                _row += f'{_str:>{COL_SIZE}}'
 
             return _row
 
@@ -144,28 +150,32 @@ class Graph:
         if not point_a or not point_z:
             return None
 
-        def _check_node(node: Node, path):
+        def _check_node(context: Graph, node: Node, path):
             node.is_visited = True
-            children = [child for child in node.get_children() if not child.is_visited]
+            path_weight = sum([val[1] for val in path])
 
-            if len(children):
-                for child in children:
+            if path_weight < context.__best_path:
+                for child in [child for child in node.get_children() if not child.is_visited]:
                     uid_c = child.uid
                     edge_weight = node.get_edge_weight(child)
+                    path_weight_updated = path_weight + edge_weight
 
-                    if uid_c == uid_z:
-                        paths.append(path[:] + [(uid_c, edge_weight)])
-                    else:
-                        _check_node(child, path[:] + [(uid_c, edge_weight)])
+                    if path_weight_updated < context.__best_path:
+                        if uid_c == uid_z:
+                            context.__best_path = path_weight_updated
+                            paths.append(path[:] + [(uid_c, edge_weight)])
+                        else:
+                            _check_node(context, child, path[:] + [(uid_c, edge_weight)])
 
-        _check_node(point_a, [(uid_a, 0)])
-        self.reset_nodes()
+        _check_node(self, point_a, [(uid_a, 0)])
 
         return paths
 
-    def reset_nodes(self):
+    def reset(self):
         for node in self.nodes:
             node.is_visited = False
+
+        self.__best_path = float('inf')
 
         return self
 
@@ -175,7 +185,7 @@ def clear_screen():
 
 
 def print_line(cols=0):
-    print('-' * ((cols + 1) * 10))
+    print('-' * ((cols + 1) * COL_SIZE))
 
 
 def main():
@@ -187,9 +197,10 @@ def main():
         for i in range(int(graph.size / 2)):
             parent_node = choice(nodes)
             if node.uid != parent_node.uid:
-                node.connect_as_child(parent_node, randint(1, 9))
+                node.connect_as_child(parent_node, randint(*WEIGHT_RANGE))
 
     while not is_done:
+        graph.reset()
         clear_screen()
         print('Graph Map:')
         print_line(graph.size)
@@ -204,7 +215,7 @@ def main():
             print(f'\nThere are no available paths from node #{point_a} to node #{point_b}\n')
 
         else:
-            print('\nAvailable paths:\n')
+            print('\nBest paths:\n')
             best_path = None
 
             for index, path in enumerate(paths):
